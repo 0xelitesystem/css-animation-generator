@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS Animation Generator</title>
+<meta name="description" content="Build CSS @keyframes animations visually. Edit keyframe stops, transforms, and opacity, tune timing and iteration settings, preview live, and copy the finished CSS. Runs entirely in your browser, no external dependencies.">
+<link rel="canonical" href="https://0xelitesystem.github.io/css-animation-generator/">
+<meta property="og:title" content="CSS Animation Generator">
+<meta property="og:description" content="Build @keyframes animations visually with a live preview and one-click CSS copy. All client-side.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://0xelitesystem.github.io/css-animation-generator/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "CSS Animation Generator",
+  "description": "Build CSS @keyframes animations visually. Edit keyframe stops, transforms, and opacity, tune timing settings, preview live, and copy the finished CSS.",
+  "url": "https://0xelitesystem.github.io/css-animation-generator/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "0xelitesystem", "url": "https://elitesystem.ai" }
+}
+</script>
+<style>
+:root {
+  --bg: #fafaf6;
+  --surface: #ffffff;
+  --ink: #0a1d1e;
+  --ink-soft: #2c4a4c;
+  --rule: #c8d4d3;
+  --teal: #0f5c60;
+  --teal-deep: #0a4548;
+  --gold: #b07d2a;
+  --gold-deep: #8a611f;
+  --ok: #1a5c2e;
+  --err: #8b1a1a;
+  --code-bg: #f0ebe1;
+  --stage-grid: #e2ddd1;
+}
+[data-theme="dark"] {
+  --bg: #0c1c1d;
+  --surface: #14292a;
+  --ink: #e8ebe6;
+  --ink-soft: #b0c0bd;
+  --rule: #2a4042;
+  --teal: #4ab4ba;
+  --teal-deep: #6dc8ce;
+  --gold: #d4a155;
+  --gold-deep: #e6b876;
+  --ok: #6dd380;
+  --err: #e88080;
+  --code-bg: #0a1718;
+  --stage-grid: #1a3234;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  line-height: 1.55;
+}
+.wrap { max-width: 1100px; margin: 0 auto; }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--teal);
+}
+.tag {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.75rem;
+  color: var(--gold-deep);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .tag { color: var(--gold); }
+.theme-btn {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.theme-btn:hover { border-color: var(--teal); color: var(--teal); }
+.lede {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.75rem;
+  max-width: 65ch;
+}
+.section {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+input[type="text"], input[type="number"], select {
+  width: 100%;
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  padding: 0.5rem 0.6rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.85rem;
+  border-radius: 2px;
+}
+input:focus, select:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.85rem 1rem;
+}
+button {
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 2px;
+}
+button:hover { border-color: var(--teal); }
+button:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+button.primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--surface);
+  font-weight: 600;
+}
+[data-theme="dark"] button.primary { color: var(--bg); }
+button.primary:hover { background: var(--teal-deep); border-color: var(--teal-deep); }
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.preset-row button { font-size: 0.78rem; padding: 0.4rem 0.8rem; }
+.kf-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.kf-row {
+  display: grid;
+  grid-template-columns: 5rem repeat(5, minmax(4.5rem, 1fr)) auto;
+  gap: 0.6rem;
+  align-items: end;
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  padding: 0.6rem;
+  border-radius: 2px;
+}
+.kf-row label { margin-bottom: 0.25rem; font-size: 0.62rem; }
+.kf-del {
+  border: none;
+  background: transparent;
+  color: var(--err);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+}
+.kf-del:hover { border: none; text-decoration: underline; }
+.kf-actions { margin-top: 0.75rem; }
+.stage {
+  height: 220px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--code-bg);
+  background-image:
+    linear-gradient(var(--stage-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--stage-grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+#preview-box {
+  width: 72px;
+  height: 72px;
+  background: var(--teal);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--surface);
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+[data-theme="dark"] #preview-box { color: var(--bg); }
+pre {
+  background: var(--code-bg);
+  padding: 0.85rem;
+  border-radius: 2px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--ink);
+}
+.copy-note {
+  font-size: 0.78rem;
+  color: var(--ok);
+  margin-left: 0.6rem;
+}
+.hint {
+  font-size: 0.78rem;
+  color: var(--gold-deep);
+  margin-top: 0.75rem;
+}
+[data-theme="dark"] .hint { color: var(--gold); }
+footer {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+footer a { color: var(--teal); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+@media (max-width: 720px) {
+  body { padding: 1rem 0.75rem; }
+  h1 { font-size: 1.4rem; }
+  .kf-row { grid-template-columns: repeat(3, 1fr) auto; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>CSS Animation Generator</h1>
+    <div class="tag">Keyframes, visually</div>
+  </div>
+  <button class="theme-btn" id="theme-toggle" type="button">Dark</button>
+</header>
+
+<p class="lede">Build a CSS @keyframes animation without hand-writing it. Set the timing controls, edit keyframe stops (transform and opacity per stop), preview the result live, then copy the finished CSS. Everything runs in this page and nothing leaves your browser.</p>
+
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">Presets</div>
+  </div>
+  <div class="preset-row" role="group" aria-label="Animation presets">
+    <button type="button" data-preset="fade-in">Fade in</button>
+    <button type="button" data-preset="slide-in-left">Slide in left</button>
+    <button type="button" data-preset="bounce">Bounce</button>
+    <button type="button" data-preset="pulse">Pulse</button>
+    <button type="button" data-preset="shake">Shake</button>
+    <button type="button" data-preset="spin">Spin</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Animation settings</div>
+  <div class="controls-grid">
+    <div>
+      <label for="anim-name">Name</label>
+      <input type="text" id="anim-name" value="my-animation" spellcheck="false">
+    </div>
+    <div>
+      <label for="anim-duration">Duration (s)</label>
+      <input type="number" id="anim-duration" value="1" min="0" step="0.1">
+    </div>
+    <div>
+      <label for="anim-delay">Delay (s)</label>
+      <input type="number" id="anim-delay" value="0" min="0" step="0.1">
+    </div>
+    <div>
+      <label for="anim-timing">Timing function</label>
+      <select id="anim-timing">
+        <option value="ease">ease</option>
+        <option value="linear">linear</option>
+        <option value="ease-in">ease-in</option>
+        <option value="ease-out">ease-out</option>
+        <option value="ease-in-out">ease-in-out</option>
+        <option value="cubic-bezier(0.68, -0.55, 0.265, 1.55)">cubic-bezier back</option>
+        <option value="cubic-bezier(0.175, 0.885, 0.32, 1.275)">cubic-bezier overshoot</option>
+        <option value="cubic-bezier(0.55, 0.055, 0.675, 0.19)">cubic-bezier sharp-in</option>
+      </select>
+    </div>
+    <div>
+      <label for="anim-count">Iterations</label>
+      <input type="number" id="anim-count" value="1" min="1" step="1">
+    </div>
+    <div>
+      <label for="anim-infinite">Infinite</label>
+      <select id="anim-infinite">
+        <option value="no">no (use count)</option>
+        <option value="yes">infinite</option>
+      </select>
+    </div>
+    <div>
+      <label for="anim-direction">Direction</label>
+      <select id="anim-direction">
+        <option value="normal">normal</option>
+        <option value="reverse">reverse</option>
+        <option value="alternate">alternate</option>
+        <option value="alternate-reverse">alternate-reverse</option>
+      </select>
+    </div>
+    <div>
+      <label for="anim-fill">Fill mode</label>
+      <select id="anim-fill">
+        <option value="both">both</option>
+        <option value="forwards">forwards</option>
+        <option value="backwards">backwards</option>
+        <option value="none">none</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">Keyframe stops</div>
+  </div>
+  <div class="kf-list" id="kf-list"></div>
+  <div class="kf-actions">
+    <button type="button" id="add-kf">+ Add stop</button>
+  </div>
+  <div class="hint">Each stop sets translate X/Y (px), scale, rotate (deg), and opacity at that percentage of the timeline. Stops are sorted by percentage when the CSS is generated.</div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">Preview</div>
+    <button class="primary" id="replay-btn" type="button">Replay</button>
+  </div>
+  <div class="stage">
+    <div id="preview-box">box</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">Generated CSS</div>
+    <div>
+      <button class="primary" id="copy-btn" type="button">Copy CSS</button>
+      <span class="copy-note" id="copy-note" aria-live="polite"></span>
+    </div>
+  </div>
+  <pre id="css-out"></pre>
+</div>
+
+<footer>
+  <div>CSS Animation Generator. Open source, MIT licensed. <a href="https://github.com/0xelitesystem/css-animation-generator" target="_blank" rel="noopener">View source</a>.</div>
+  <div><a href="https://elitesystem.ai" target="_blank" rel="noopener">elitesystem.ai</a></div>
+</footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+// Theme toggle
+const themeBtn = $("theme-toggle");
+function setTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  themeBtn.textContent = t === "dark" ? "Light" : "Dark";
+}
+themeBtn.addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme") || "light";
+  setTheme(cur === "dark" ? "light" : "dark");
+});
+setTheme("light");
+
+// Keyframe model: array of { offset, tx, ty, scale, rotate, opacity }
+let keyframes = [
+  { offset: 0, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+  { offset: 100, tx: 0, ty: 0, scale: 1.2, rotate: 0, opacity: 1 },
+];
+
+const PRESETS = {
+  "fade-in": {
+    name: "fade-in", duration: 0.8, delay: 0, timing: "ease-out", count: 1, infinite: false, direction: "normal", fill: "both",
+    frames: [
+      { offset: 0, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 0 },
+      { offset: 100, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+    ],
+  },
+  "slide-in-left": {
+    name: "slide-in-left", duration: 0.6, delay: 0, timing: "ease-out", count: 1, infinite: false, direction: "normal", fill: "both",
+    frames: [
+      { offset: 0, tx: -120, ty: 0, scale: 1, rotate: 0, opacity: 0 },
+      { offset: 100, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+    ],
+  },
+  "bounce": {
+    name: "bounce", duration: 1, delay: 0, timing: "ease", count: 1, infinite: false, direction: "normal", fill: "both",
+    frames: [
+      { offset: 0, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 30, tx: 0, ty: -55, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 50, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 70, tx: 0, ty: -25, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 85, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 100, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+    ],
+  },
+  "pulse": {
+    name: "pulse", duration: 0.9, delay: 0, timing: "ease-in-out", count: 1, infinite: true, direction: "normal", fill: "none",
+    frames: [
+      { offset: 0, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 50, tx: 0, ty: 0, scale: 1.15, rotate: 0, opacity: 0.85 },
+      { offset: 100, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+    ],
+  },
+  "shake": {
+    name: "shake", duration: 0.6, delay: 0, timing: "linear", count: 1, infinite: false, direction: "normal", fill: "none",
+    frames: [
+      { offset: 0, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 15, tx: -12, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 30, tx: 12, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 45, tx: -9, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 60, tx: 9, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 75, tx: -5, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 100, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+    ],
+  },
+  "spin": {
+    name: "spin", duration: 1.2, delay: 0, timing: "linear", count: 1, infinite: true, direction: "normal", fill: "none",
+    frames: [
+      { offset: 0, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 },
+      { offset: 100, tx: 0, ty: 0, scale: 1, rotate: 360, opacity: 1 },
+    ],
+  },
+};
+
+// Keyframe editor rendering
+function numField(labelText, value, min, max, step, onChange) {
+  const div = document.createElement("div");
+  const lab = document.createElement("label");
+  lab.textContent = labelText;
+  const inp = document.createElement("input");
+  inp.type = "number";
+  inp.value = value;
+  if (min !== null) inp.min = min;
+  if (max !== null) inp.max = max;
+  inp.step = step;
+  const fid = "kf-" + labelText.replace(/[^a-z]/gi, "") + "-" + Math.random().toString(36).slice(2, 7);
+  inp.id = fid;
+  lab.htmlFor = fid;
+  inp.addEventListener("input", () => { onChange(parseFloat(inp.value)); update(); });
+  div.appendChild(lab);
+  div.appendChild(inp);
+  return div;
+}
+
+function renderKeyframeEditor() {
+  const list = $("kf-list");
+  list.innerHTML = "";
+  keyframes.forEach((kf, i) => {
+    const row = document.createElement("div");
+    row.className = "kf-row";
+    row.appendChild(numField("Stop %", kf.offset, 0, 100, 1, (v) => { kf.offset = isNaN(v) ? 0 : v; }));
+    row.appendChild(numField("Trans X px", kf.tx, null, null, 1, (v) => { kf.tx = isNaN(v) ? 0 : v; }));
+    row.appendChild(numField("Trans Y px", kf.ty, null, null, 1, (v) => { kf.ty = isNaN(v) ? 0 : v; }));
+    row.appendChild(numField("Scale", kf.scale, 0, null, 0.05, (v) => { kf.scale = isNaN(v) ? 1 : v; }));
+    row.appendChild(numField("Rotate deg", kf.rotate, null, null, 1, (v) => { kf.rotate = isNaN(v) ? 0 : v; }));
+    row.appendChild(numField("Opacity", kf.opacity, 0, 1, 0.05, (v) => { kf.opacity = isNaN(v) ? 1 : Math.min(1, Math.max(0, v)); }));
+    const del = document.createElement("button");
+    del.className = "kf-del";
+    del.type = "button";
+    del.textContent = "x";
+    del.setAttribute("aria-label", "Remove keyframe stop " + (i + 1));
+    del.addEventListener("click", () => {
+      if (keyframes.length <= 2) return;
+      keyframes.splice(i, 1);
+      renderKeyframeEditor();
+      update();
+    });
+    row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+
+$("add-kf").addEventListener("click", () => {
+  const last = keyframes[keyframes.length - 1];
+  const prev = keyframes.length > 1 ? keyframes[keyframes.length - 2] : { offset: 0 };
+  const mid = Math.round((prev.offset + last.offset) / 2);
+  keyframes.splice(keyframes.length - 1, 0, { offset: mid, tx: 0, ty: 0, scale: 1, rotate: 0, opacity: 1 });
+  renderKeyframeEditor();
+  update();
+});
+
+// Settings readers
+function safeName() {
+  const raw = $("anim-name").value.trim();
+  const cleaned = raw.replace(/[^a-zA-Z0-9_-]/g, "-").replace(/^[0-9-]+/, "") || "my-animation";
+  return cleaned;
+}
+function readSettings() {
+  return {
+    name: safeName(),
+    duration: Math.max(0, parseFloat($("anim-duration").value) || 0),
+    delay: Math.max(0, parseFloat($("anim-delay").value) || 0),
+    timing: $("anim-timing").value,
+    count: $("anim-infinite").value === "yes" ? "infinite" : String(Math.max(1, Math.round(parseFloat($("anim-count").value) || 1))),
+    direction: $("anim-direction").value,
+    fill: $("anim-fill").value,
+  };
+}
+
+function fmt(n) {
+  const r = Math.round(n * 1000) / 1000;
+  return String(r);
+}
+
+// Build the CSS text from the current model
+function buildCss() {
+  const s = readSettings();
+  const sorted = [...keyframes].sort((a, b) => a.offset - b.offset);
+  let kfBlock = "@keyframes " + s.name + " {\n";
+  for (const kf of sorted) {
+    kfBlock += "  " + fmt(kf.offset) + "% {\n";
+    kfBlock += "    transform: translate(" + fmt(kf.tx) + "px, " + fmt(kf.ty) + "px) scale(" + fmt(kf.scale) + ") rotate(" + fmt(kf.rotate) + "deg);\n";
+    kfBlock += "    opacity: " + fmt(kf.opacity) + ";\n";
+    kfBlock += "  }\n";
+  }
+  kfBlock += "}";
+  const shorthand = s.name + " " + fmt(s.duration) + "s " + s.timing + " " + fmt(s.delay) + "s " + s.count + " " + s.direction + " " + s.fill;
+  const classBlock = "." + s.name + " {\n  animation: " + shorthand + ";\n}";
+  return { css: kfBlock + "\n\n" + classBlock, shorthand: shorthand, name: s.name, kfBlock: kfBlock };
+}
+
+// Live style element that drives the preview
+const liveStyle = document.createElement("style");
+document.head.appendChild(liveStyle);
+
+function update() {
+  const built = buildCss();
+  $("css-out").textContent = built.css;
+  liveStyle.textContent = built.kfBlock + "\n#preview-box.playing { animation: " + built.shorthand + "; }";
+}
+
+function replay() {
+  update();
+  const box = $("preview-box");
+  box.classList.remove("playing");
+  void box.offsetWidth; // force reflow so the animation restarts
+  box.classList.add("playing");
+}
+
+$("replay-btn").addEventListener("click", replay);
+
+// Copy button
+$("copy-btn").addEventListener("click", () => {
+  const text = buildCss().css;
+  const note = $("copy-note");
+  function done(ok) {
+    note.textContent = ok ? "Copied" : "Copy failed, select the text manually";
+    setTimeout(() => { note.textContent = ""; }, 2000);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => done(true), () => done(false));
+  } else {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    done(ok);
+  }
+});
+
+// Presets
+document.querySelectorAll("[data-preset]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const p = PRESETS[btn.dataset.preset];
+    if (!p) return;
+    $("anim-name").value = p.name;
+    $("anim-duration").value = p.duration;
+    $("anim-delay").value = p.delay;
+    $("anim-timing").value = p.timing;
+    $("anim-count").value = p.count;
+    $("anim-infinite").value = p.infinite ? "yes" : "no";
+    $("anim-direction").value = p.direction;
+    $("anim-fill").value = p.fill;
+    keyframes = p.frames.map((f) => ({ ...f }));
+    renderKeyframeEditor();
+    replay();
+  });
+});
+
+// Any settings change regenerates the CSS output live
+["anim-name", "anim-duration", "anim-delay", "anim-timing", "anim-count", "anim-infinite", "anim-direction", "anim-fill"].forEach((id) => {
+  $(id).addEventListener("input", update);
+  $(id).addEventListener("change", update);
+});
+
+renderKeyframeEditor();
+update();
+</script>
+</body>
+</html>
